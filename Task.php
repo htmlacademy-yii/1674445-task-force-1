@@ -34,10 +34,10 @@ class Task
     {}
 
     // метод для получения статуса, в которой он перейдёт после выполнения указанного действия
-    public function setStatus()
+    public function getNextStatus()
     {}
 
     // метод для получения доступных действий для указанного статуса
-    public function setActions()
+    public function getNextActions()
     {}
 }
