@@ -1,0 +1,15 @@
+{
+    "name": "oleg/taskforce",
+    "authors": [
+        {
+            "name": "Oleg Tishkin",
+            "email": "umkasanki@gmail.com"
+        }
+    ],
+  "autoload": {
+    "psr-4": {
+      "myorg\\": "classes/"
+    }
+  },
+    "require": {}
+}

@@ -1,5 +1,7 @@
 <?php
 
+namespace myorg\general;
+
 class User
 {
     public const ROLE_CUSTOMER = 'customer';
