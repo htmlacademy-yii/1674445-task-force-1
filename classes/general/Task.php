@@ -1,5 +1,7 @@
 <?php
 
+namespace myorg\general;
+
 class Task
 {
     public const STATUS_NEW = 'new';
