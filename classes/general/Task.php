@@ -2,6 +2,13 @@
 
 namespace myorg\general;
 
+use myorg\actions\AddAction;
+use myorg\actions\AddExecutorAction;
+use myorg\actions\CancelAction;
+use myorg\actions\CloseAction;
+use myorg\actions\RefuseAction;
+use myorg\actions\RespondAction;
+
 class Task
 {
     public const STATUS_NEW = 'new';
@@ -11,9 +18,9 @@ class Task
     public const STATUS_FAILED = 'failed';
     public const STATUS_REFUSED = 'refused';
 
-    public const ACTION_START_TASK = 'action_start';
+    public const ACTION_ADD_TASK = 'action_add';
     public const ACTION_RESPOND_TASK = 'action_respond';
-    public const ACTION_ADD_TASK_DEVELOPER = 'action_add';
+    public const ACTION_ADD_TASK_EXECUTOR = 'action_add_executor';
     public const ACTION_REFUSE_TASK = 'action_refuse';
     public const ACTION_CANCEL_TASK = 'action_cancel';
     public const ACTION_CLOSE_TASK = 'action_close';
@@ -58,15 +65,21 @@ class Task
     }
 
     // метод для возврата «карты» действий
-    public function getActionses()
+    public function getActions()
     {
         return array(
-            self::ACTION_START_TASK => 'Добавить',
-            self::ACTION_RESPOND_TASK => 'Откликнуться',
-            self::ACTION_ADD_TASK_DEVELOPER => 'Назначить исполнителя',
-            self::ACTION_CANCEL_TASK => 'Отменить',
-            self::ACTION_CLOSE_TASK => 'Завершить',
-            self::ACTION_REFUSE_TASK => 'Отказаться',
+//            self::ACTION_ADD_TASK => 'Добавить',
+//            self::ACTION_RESPOND_TASK => 'Откликнуться',
+//            self::ACTION_ADD_TASK_EXECUTOR => 'Назначить исполнителя',
+//            self::ACTION_CANCEL_TASK => 'Отменить',
+//            self::ACTION_CLOSE_TASK => 'Завершить',
+//            self::ACTION_REFUSE_TASK => 'Отказаться',
+            new AddAction(),
+            new RespondAction(),
+            new AddExecutorAction(),
+            new CancelAction(),
+            new CloseAction(),
+            new RefuseAction()
         );
     }
 
@@ -92,17 +105,21 @@ class Task
     {
         if ($this->status == self::STATUS_NEW) {
             if ($user->role == $user::ROLE_CUSTOMER) {
-                return self::ACTION_CANCEL_TASK;
+                // return self::ACTION_CANCEL_TASK;
+                return new CancelAction();
             }
 
-            return self::ACTION_RESPOND_TASK;
+            // return self::ACTION_RESPOND_TASK;
+            return new RespondAction();
         }
         if ($this->status == self::STATUS_IN_PROGRESS) {
             if ($user->role == $user::ROLE_CUSTOMER) {
-                return self::ACTION_CLOSE_TASK;
+                // return self::ACTION_CLOSE_TASK;
+                return new CloseAction();
             }
 
-            return self::ACTION_REFUSE_TASK;
+            // return self::ACTION_REFUSE_TASK;
+            return new RefuseAction();
         }
     }
 }
