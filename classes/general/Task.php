@@ -8,6 +8,7 @@ use myorg\actions\CancelAction;
 use myorg\actions\CloseAction;
 use myorg\actions\RefuseAction;
 use myorg\actions\RespondAction;
+use myorg\advanced\BaseException;
 
 class Task
 {
@@ -101,25 +102,34 @@ class Task
     }
 
     // метод для получения доступных действий для указанного статуса
-    public function getNextActions($user)
+    public function getNextActions($userRole)
     {
-        if ($this->status == self::STATUS_NEW) {
-            if ($user->role == $user::ROLE_CUSTOMER) {
-                // return self::ACTION_CANCEL_TASK;
-                return new CancelAction();
-            }
+        try {
+            if (($userRole == User::ROLE_DEVELOPER) || ($userRole == User::ROLE_CUSTOMER)) {
+                if ($this->status == self::STATUS_NEW) {
+                    if ($userRole == User::ROLE_CUSTOMER) {
+                        // return self::ACTION_CANCEL_TASK;
+                        return new CancelAction();
+                    }
 
-            // return self::ACTION_RESPOND_TASK;
-            return new RespondAction();
-        }
-        if ($this->status == self::STATUS_IN_PROGRESS) {
-            if ($user->role == $user::ROLE_CUSTOMER) {
-                // return self::ACTION_CLOSE_TASK;
-                return new CloseAction();
-            }
+                    // return self::ACTION_RESPOND_TASK;
+                    return new RespondAction();
+                }
+                if ($this->status == self::STATUS_IN_PROGRESS) {
+                    if ($userRole == User::ROLE_CUSTOMER) {
+                        // return self::ACTION_CLOSE_TASK;
+                        return new CloseAction();
+                    }
 
-            // return self::ACTION_REFUSE_TASK;
-            return new RefuseAction();
+                    // return self::ACTION_REFUSE_TASK;
+                    return new RefuseAction();
+                }
+            } else {
+                throw new BaseException('User role is not founded');
+            }
+        } catch (BaseException $e) {
+            echo $e->getMessage();
+            die();
         }
     }
 }
