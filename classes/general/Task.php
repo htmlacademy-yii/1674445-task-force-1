@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace myorg\general;
 
 use myorg\actions\AddAction;
@@ -28,23 +30,23 @@ class Task
     public const ACTION_CANCEL_TASK = 'action_cancel';
     public const ACTION_CLOSE_TASK = 'action_close';
 
-    public $customerId;
-    public $developerId;
+    public int $customerId;
+    public int $developerId;
 
-    public $status;
-    public $allowedActions;
+    public string $status;
+    public array $allowedActions;
 
-    public $publishDate;
-    public $dueDate;
-    public $category;
-    public $budget;
-    public $location;
-    public $remote;
+    public string $publishDate;
+    public string $dueDate;
+    public object $category;
+    public int $budget;
+    public object $location;
+    public bool $remote;
 
-    public $title;
-    public $description;
-    public $attachments;
-    public $comments;
+    public string $title;
+    public string $description;
+    public array $attachments;
+    public string $comments;
 
     public $responseList;
 
@@ -55,7 +57,7 @@ class Task
     }
 
     // метод для возврата «карты» статусов
-    public function getStatuses()
+    public function getStatuses(): array
     {
         return array(
             self::STATUS_NEW => 'Новое',
@@ -68,7 +70,7 @@ class Task
     }
 
     // метод для возврата «карты» действий
-    public function getActions()
+    public function getActions(): array
     {
         return array(
 //            self::ACTION_ADD_TASK => 'Добавить',
@@ -87,7 +89,7 @@ class Task
     }
 
     // метод для получения статуса, в которой он перейдёт после выполнения указанного действия
-    public function getNextStatus($actionName)
+    public function getNextStatus($actionName): string
     {
         try {
             switch ($actionName) {
@@ -112,29 +114,36 @@ class Task
     }
 
     // метод для получения доступных действий для указанного статуса
-    public function getNextActions($userRole)
+    // вопрос. как тут проверить тип?
+    public function getNextActions(string $userRole): object
     {
         try {
-            if (($userRole == User::ROLE_DEVELOPER) || ($userRole == User::ROLE_CUSTOMER)) {
-                if ($this->status == self::STATUS_NEW) {
-                    if ($userRole == User::ROLE_CUSTOMER) {
-                        // return self::ACTION_CANCEL_TASK;
-                        return new CancelAction();
-                    }
+            if (!is_string($userRole)) {
+                throw new TaskBaseException('Bad type of user role variable');
+            }
 
-                    // return self::ACTION_RESPOND_TASK;
+            if ($this->status == self::STATUS_NEW) {
+                if ($userRole == User::ROLE_CUSTOMER) {
+                    // return self::ACTION_CANCEL_TASK;
+                    return new CancelAction();
+                }
+
+                if ($userRole == User::ROLE_DEVELOPER) {
                     return new RespondAction();
                 }
-                if ($this->status == self::STATUS_IN_PROGRESS) {
-                    if ($userRole == User::ROLE_CUSTOMER) {
-                        // return self::ACTION_CLOSE_TASK;
-                        return new CloseAction();
-                    }
+            }
+            if ($this->status == self::STATUS_IN_PROGRESS) {
+                if ($userRole == User::ROLE_CUSTOMER) {
+                    // return self::ACTION_CLOSE_TASK;
+                    return new CloseAction();
+                }
 
-                    // return self::ACTION_REFUSE_TASK;
+                if ($userRole == User::ROLE_DEVELOPER) {
                     return new RefuseAction();
                 }
-            } else {
+            }
+
+            if (($userRole != User::ROLE_DEVELOPER) && ($userRole != User::ROLE_CUSTOMER)) {
                 throw new TaskBaseException('User role is not founded');
             }
         } catch (TaskBaseException $e) {
