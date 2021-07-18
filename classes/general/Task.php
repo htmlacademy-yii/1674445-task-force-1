@@ -10,6 +10,8 @@ use myorg\actions\RefuseAction;
 use myorg\actions\RespondAction;
 use myorg\advanced\BaseException;
 
+class TaskBaseException extends BaseException {}
+
 class Task
 {
     public const STATUS_NEW = 'new';
@@ -100,10 +102,10 @@ class Task
                 case self::ACTION_CLOSE_TASK:
                     return self::STATUS_DONE;
                 default:
-                    throw new BaseException('Action name not founded');
+                    throw new TaskBaseException('Action name not founded');
             }
-        } catch (BaseException $e) {
-            echo $e->getMessage();
+        } catch (TaskBaseException $e) {
+            echo 'TaskBaseException: ' . $e->getMessage();
             die();
         }
 
@@ -133,10 +135,10 @@ class Task
                     return new RefuseAction();
                 }
             } else {
-                throw new BaseException('User role is not founded');
+                throw new TaskBaseException('User role is not founded');
             }
-        } catch (BaseException $e) {
-            echo $e->getMessage();
+        } catch (TaskBaseException $e) {
+            echo 'TaskBaseException: ' . $e->getMessage();
             die();
         }
     }
