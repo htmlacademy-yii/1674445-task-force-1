@@ -87,10 +87,11 @@ class Task
     // метод для получения статуса, в которой он перейдёт после выполнения указанного действия
     public function getNextStatus($actionName)
     {
+        var_dump($actionName);
         switch ($actionName) {
-            case self::ACTION_START_TASK:
+            case self::ACTION_ADD_TASK:
                 return self::STATUS_NEW;
-            case self::ACTION_ADD_TASK_DEVELOPER:
+            case self::ACTION_ADD_TASK_EXECUTOR:
                 return self::STATUS_IN_PROGRESS;
             case self::ACTION_REFUSE_TASK:
                 return self::STATUS_REFUSED;
