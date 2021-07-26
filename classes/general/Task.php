@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace myorg\general;
 
 use myorg\actions\AddAction;
@@ -8,6 +10,9 @@ use myorg\actions\CancelAction;
 use myorg\actions\CloseAction;
 use myorg\actions\RefuseAction;
 use myorg\actions\RespondAction;
+use myorg\advanced\BaseException;
+
+class TaskBaseException extends BaseException {}
 
 class Task
 {
@@ -25,23 +30,23 @@ class Task
     public const ACTION_CANCEL_TASK = 'action_cancel';
     public const ACTION_CLOSE_TASK = 'action_close';
 
-    public $customerId;
-    public $developerId;
+    public int $customerId;
+    public int $developerId;
 
-    public $status;
-    public $allowedActions;
+    public string $status;
+    public array $allowedActions;
 
-    public $publishDate;
-    public $dueDate;
-    public $category;
-    public $budget;
-    public $location;
-    public $remote;
+    public string $publishDate;
+    public string $dueDate;
+    public object $category;
+    public int $budget;
+    public object $location;
+    public bool $remote;
 
-    public $title;
-    public $description;
-    public $attachments;
-    public $comments;
+    public string $title;
+    public string $description;
+    public array $attachments;
+    public string $comments;
 
     public $responseList;
 
@@ -52,7 +57,7 @@ class Task
     }
 
     // метод для возврата «карты» статусов
-    public function getStatuses()
+    public function getStatuses(): array
     {
         return array(
             self::STATUS_NEW => 'Новое',
@@ -65,7 +70,7 @@ class Task
     }
 
     // метод для возврата «карты» действий
-    public function getActions()
+    public function getActions(): array
     {
         return array(
 //            self::ACTION_ADD_TASK => 'Добавить',
@@ -84,42 +89,66 @@ class Task
     }
 
     // метод для получения статуса, в которой он перейдёт после выполнения указанного действия
-    public function getNextStatus($actionName)
+    public function getNextStatus($actionName): string
     {
-        switch ($actionName) {
-            case self::ACTION_START_TASK:
-                return self::STATUS_NEW;
-            case self::ACTION_ADD_TASK_DEVELOPER:
-                return self::STATUS_IN_PROGRESS;
-            case self::ACTION_REFUSE_TASK:
-                return self::STATUS_REFUSED;
-            case self::ACTION_CANCEL_TASK:
-                return self::STATUS_CANCEL;
-            case self::ACTION_CLOSE_TASK:
-                return self::STATUS_DONE;
+        try {
+            switch ($actionName) {
+                case self::ACTION_ADD_TASK:
+                    return self::STATUS_NEW;
+                case self::ACTION_ADD_TASK_EXECUTOR:
+                    return self::STATUS_IN_PROGRESS;
+                case self::ACTION_REFUSE_TASK:
+                    return self::STATUS_REFUSED;
+                case self::ACTION_CANCEL_TASK:
+                    return self::STATUS_CANCEL;
+                case self::ACTION_CLOSE_TASK:
+                    return self::STATUS_DONE;
+                default:
+                    throw new TaskBaseException('Action name not founded');
+            }
+        } catch (TaskBaseException $e) {
+            echo 'TaskBaseException: ' . $e->getMessage();
+            die();
         }
+
     }
 
     // метод для получения доступных действий для указанного статуса
-    public function getNextActions($user)
+    // вопрос. как тут проверить тип?
+    public function getNextActions(string $userRole): object
     {
-        if ($this->status == self::STATUS_NEW) {
-            if ($user->role == $user::ROLE_CUSTOMER) {
-                // return self::ACTION_CANCEL_TASK;
-                return new CancelAction();
+        try {
+            if (!is_string($userRole)) {
+                throw new TaskBaseException('Bad type of user role variable');
             }
 
-            // return self::ACTION_RESPOND_TASK;
-            return new RespondAction();
-        }
-        if ($this->status == self::STATUS_IN_PROGRESS) {
-            if ($user->role == $user::ROLE_CUSTOMER) {
-                // return self::ACTION_CLOSE_TASK;
-                return new CloseAction();
+            if ($this->status == self::STATUS_NEW) {
+                if ($userRole == User::ROLE_CUSTOMER) {
+                    // return self::ACTION_CANCEL_TASK;
+                    return new CancelAction();
+                }
+
+                if ($userRole == User::ROLE_DEVELOPER) {
+                    return new RespondAction();
+                }
+            }
+            if ($this->status == self::STATUS_IN_PROGRESS) {
+                if ($userRole == User::ROLE_CUSTOMER) {
+                    // return self::ACTION_CLOSE_TASK;
+                    return new CloseAction();
+                }
+
+                if ($userRole == User::ROLE_DEVELOPER) {
+                    return new RefuseAction();
+                }
             }
 
-            // return self::ACTION_REFUSE_TASK;
-            return new RefuseAction();
+            if (($userRole != User::ROLE_DEVELOPER) && ($userRole != User::ROLE_CUSTOMER)) {
+                throw new TaskBaseException('User role is not founded');
+            }
+        } catch (TaskBaseException $e) {
+            echo 'TaskBaseException: ' . $e->getMessage();
+            die();
         }
     }
 }

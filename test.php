@@ -20,8 +20,13 @@ $addAction = new AddAction();
 //var_dump($task->getStatuses());
 //var_dump($sustomer->role);
 //var_dump($task->status);
-var_dump($task->getNextActions($sustomer));
-//var_dump($task->getNextStatus('action_cancel'));
+
+//var_dump($task->getNextActions('customer'));
+//var_dump($task->getNextActions('developers'));
+//var_dump($task->getNextActions(['developer']));
+var_dump($task->getNextActions(false));
+
+//var_dump($task->getNextStatus('action_cancel_me'));
 
 //var_dump($task->getActions());
 
