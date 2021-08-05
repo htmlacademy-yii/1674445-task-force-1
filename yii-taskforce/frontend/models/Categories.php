@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend;
+namespace frontend\models;
 
 use Yii;
 
