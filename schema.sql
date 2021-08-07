@@ -41,7 +41,7 @@ CREATE TABLE `replies`
 (
     `reply_id`    INT AUTO_INCREMENT PRIMARY KEY,
     `dt_add`      DATE         NOT NULL,
-    `rate`        VARCHAR(128) NOT NULL,
+    `rate`        VARCHAR(128) NULL,
     `description` TEXT NULL
 );
 
