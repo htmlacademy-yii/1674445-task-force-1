@@ -1,4 +1,4 @@
-INSERT INTO users (dt_add, rate, description)
+INSERT INTO replies (dt_add, rate, description)
 VALUES ('2019-05-09','1','Curabitur gravida nisi at nibh. In hac habitasse platea dictumst. Aliquam augue quam, sollicitudin vitae, consectetuer eget, rutrum at, lorem.
 
 Integer tincidunt ante vel ipsum. Praesent blandit lacinia erat. Vestibulum sed magna at nunc commodo placerat.
